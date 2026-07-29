@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0",
+  "id": "fix-session-timeout-weakened",
+  "summary": "A deliberately weakened intent contract.",
+  "outcomes": [
+    {
+      "id": "bounded-refresh",
+      "statement": "Session refresh aborts after the configured timeout.",
+      "pathPatterns": ["src/session.ts"],
+      "requiredDiffTokens": [],
+      "allowedChangeKinds": ["modified", "deleted"]
+    },
+    {
+      "id": "timeout-regression-test",
+      "statement": "A regression test covers slow refresh failure.",
+      "pathPatterns": ["test/**/*.test.ts"],
+      "requiredDiffTokens": ["times out slow requests"],
+      "allowedChangeKinds": ["added", "modified"]
+    }
+  ],
+  "rules": {
+    "allowedPaths": ["src/**", "test/**", "package.json", ".github/**", "**/*"],
+    "forbiddenPaths": [],
+    "maxFiles": 20,
+    "maxChangedLines": 1000,
+    "sourcePatterns": ["src/**"],
+    "testPatterns": ["test/**/*.test.ts"],
+    "requireTestsForSourceChanges": false,
+    "dependencyManifestPatterns": ["package.json", "**/package.json", "*-lock.*"],
+    "workflowPatterns": [".github/workflows/**"],
+    "allowDependencyChanges": true,
+    "allowWorkflowChanges": true,
+    "protectedPaths": [],
+    "disallowCatchAllClaims": false
+  },
+  "approvals": []
+}

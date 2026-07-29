@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0",
+  "id": "fix-session-timeout",
+  "summary": "Add a bounded timeout to session refresh and cover the failure path.",
+  "outcomes": [
+    {
+      "id": "bounded-refresh",
+      "statement": "Session refresh aborts after the configured timeout.",
+      "pathPatterns": ["src/session.ts"],
+      "requiredDiffTokens": ["AbortSignal.timeout"],
+      "allowedChangeKinds": ["modified"]
+    },
+    {
+      "id": "timeout-regression-test",
+      "statement": "A regression test covers slow refresh failure.",
+      "pathPatterns": ["test/**/*.test.ts"],
+      "requiredDiffTokens": ["times out slow requests"],
+      "allowedChangeKinds": ["added", "modified"]
+    }
+  ],
+  "rules": {
+    "allowedPaths": ["src/**", "test/**", "package.json", ".github/**"],
+    "forbiddenPaths": ["secrets/**", "infra/production/**"],
+    "maxFiles": 4,
+    "maxChangedLines": 80,
+    "sourcePatterns": ["src/**"],
+    "testPatterns": ["test/**/*.test.ts"],
+    "requireTestsForSourceChanges": true,
+    "dependencyManifestPatterns": ["package.json", "**/package.json", "*-lock.*"],
+    "workflowPatterns": [".github/workflows/**"],
+    "allowDependencyChanges": false,
+    "allowWorkflowChanges": false,
+    "protectedPaths": [
+      {
+        "pattern": ".github/workflows/**",
+        "approvalId": "workflow-admin",
+        "reason": "CI workflows can change repository authority."
+      }
+    ],
+    "disallowCatchAllClaims": true
+  },
+  "approvals": []
+}

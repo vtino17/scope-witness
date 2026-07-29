@@ -1,0 +1,25 @@
+name: Control proposal
+description: Propose a new accountability control
+title: "control: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: failure
+    attributes:
+      label: Failure mode
+      description: Which out-of-scope change should this control detect?
+    validations:
+      required: true
+  - type: textarea
+    id: rule
+    attributes:
+      label: Deterministic rule
+      description: How can the condition be evaluated without an external model?
+    validations:
+      required: true
+  - type: textarea
+    id: tradeoffs
+    attributes:
+      label: False positives and limitations
+    validations:
+      required: true

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "1.0",
+  "contractId": "fix-session-timeout",
+  "claims": [
+    {
+      "id": "claim-refresh-implementation",
+      "pathPattern": "src/session.ts",
+      "outcomeIds": ["bounded-refresh"],
+      "reason": "Wire the requested timeout into the refresh request."
+    },
+    {
+      "id": "claim-timeout-test",
+      "pathPattern": "test/**/*.test.ts",
+      "outcomeIds": ["timeout-regression-test"],
+      "reason": "Exercise the slow-request failure path."
+    }
+  ]
+}

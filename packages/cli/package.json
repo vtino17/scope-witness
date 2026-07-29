@@ -1,0 +1,1 @@
+{"name":"@scopewitness/cli","version":"0.1.0","description":"CLI for auditing code patches against explicit intent.","type":"module","bin":{"scope-witness":"./dist/index.js"},"main":"./dist/index.js","files":["dist"],"scripts":{"build":"tsc -p tsconfig.build.json"},"dependencies":{"@scopewitness/core":"workspace:*"}}
