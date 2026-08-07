@@ -86,6 +86,17 @@ describe("scope auditing", () => {
     expect(audit.issues.some((entry) => entry.code === "required-diff-token-missing")).toBe(true);
   });
 
+  it("does not satisfy outcomes with tokens that only appear in deleted lines", async () => {
+    const patch = alignedPatch.replace(
+      "-  return fetch(endpoint);\n+  const signal = AbortSignal.timeout(timeoutMs);",
+      "-  const signal = AbortSignal.timeout(timeoutMs);\n+  const signal = controller.signal;",
+    );
+    const audit = await auditPatch({ contract: sampleContract, claims: sampleClaims, patch, auditedAt: at });
+    const outcome = audit.outcomes.find((entry) => entry.outcomeId === "bounded-refresh");
+    expect(outcome?.missingTokens).toContain("AbortSignal.timeout");
+    expect(audit.issues.some((entry) => entry.code === "required-diff-token-missing")).toBe(true);
+  });
+
   it("enforces file and line budgets", async () => {
     const contract = structuredClone(sampleContract);
     contract.rules.maxFiles = 1;
