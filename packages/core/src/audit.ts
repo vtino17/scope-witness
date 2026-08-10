@@ -31,7 +31,12 @@ export async function auditPatch(input: {
   const sourceChanged = changedPaths.some((path) => matchesAny(path, contract.rules.sourcePatterns));
   const testsChanged = changedPaths.some((path) => matchesAny(path, contract.rules.testPatterns));
   if (sourceChanged && contract.rules.requireTestsForSourceChanges && !testsChanged) globalIssues.push(issue("missing-test-change", "blocked", "Source files changed without a matching test-file change."));
-  const patchText = inventory.files.flatMap((file) => file.hunks.map((hunk) => hunk.content)).join("\n");
+  const addedPatchText = inventory.files
+    .flatMap((file) => file.hunks)
+    .flatMap((hunk) => hunk.content.split("\n"))
+    .filter((line) => line.startsWith("+") && !line.startsWith("+++"))
+    .map((line) => line.slice(1))
+    .join("\n");
   const fileIssues = inventory.files.flatMap((file) => {
     const issues: ScopeIssue[] = [];
     if (!matchesAny(file.path, contract.rules.allowedPaths)) issues.push(issue("path-outside-scope", "blocked", "Changed path is outside the allowed scope.", { path: file.path }));
@@ -83,7 +88,7 @@ export async function auditPatch(input: {
   );
   const outcomeAudits = contract.outcomes.map((outcome) => {
     const hunkIds = hunkAudits.filter((hunk) => hunk.covered && hunk.outcomeIds.includes(outcome.id)).map((hunk) => hunk.hunkId);
-    const missingTokens = outcome.requiredDiffTokens.filter((token) => !patchText.includes(token));
+    const missingTokens = outcome.requiredDiffTokens.filter((token) => !addedPatchText.includes(token));
     const issues: ScopeIssue[] = [];
     if (hunkIds.length === 0) issues.push(issue("outcome-unimplemented", "blocked", "No covered hunk implements this requested outcome.", { outcomeId: outcome.id }));
     if (missingTokens.length > 0) issues.push(issue("required-diff-token-missing", "blocked", `Missing required diff tokens: ${missingTokens.join(", ")}.`, { outcomeId: outcome.id }));
